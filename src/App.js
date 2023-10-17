@@ -5,7 +5,7 @@ export default function App() {
   //States decleration
   const [newTodo, setNewTodo] = useState('');
   const [todoList, SetTodoList] = useState([]);
-  const [editMode,setEditMode] =useState(false)
+  const [editMode,setEditMode] =useState(false);
   //Adding an Item to the list 
   const addItem = () => {
     if(!newTodo){
@@ -14,6 +14,7 @@ export default function App() {
     const todo = {
       id: Math.floor(Math.random() * 10000),
       value: newTodo,
+      marked:false,
     }
     SetTodoList(prev => [...prev, todo]);
     setNewTodo('');
@@ -38,6 +39,7 @@ export default function App() {
     setNewTodo('');
     setEditMode(false)
   }
+  //JSX 
   return (
     <div className='App'>
       <h1>TODO List</h1>
@@ -48,18 +50,19 @@ export default function App() {
         onChange={e => setNewTodo(e.target.value)}
       />
       {!editMode && 
-        <button
-          onClick={addItem}
-        >
-          Add TODO
-        </button>
+          <button
+            onClick={addItem}
+          >
+            Add TODO
+          </button>
       }
       
 
       <ul>
         {todoList.map(todo => {
-        return(
+           return(
                 <li key={todo.id}>
+                  <input type='checkbox' checked={todo.marked} onChange={()=>!todo.marked}/>
                   {todo.value}
                   {!editMode ? 
                   <button style={{background:'blue', color:'white',border:'unset'}}
