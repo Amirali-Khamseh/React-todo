@@ -1,75 +1,85 @@
-import { useState } from "react";
+import React, { useState } from 'react'
 
-function App() {
-const [newTodo,setNewTodo]=useState('');
-const [todos,SetTodos] = useState([]);
-const [editStatus,setEditStatus] = useState(true);
-const addItem = ()=>{
-  if(!newTodo){
-    alert('Enter the valid todo !!!');
-    return;
+
+export default function App() {
+  //States decleration
+  const [newTodo, setNewTodo] = useState('');
+  const [todoList, SetTodoList] = useState([]);
+  const [editMode,setEditMode] =useState(false)
+  //Adding an Item to the list 
+  const addItem = () => {
+    if(!newTodo){
+      alert('Enter the valid Todo !!!')
+    }
+    const todo = {
+      id: Math.floor(Math.random() * 10000),
+      value: newTodo,
+    }
+    SetTodoList(prev => [...prev, todo]);
+    setNewTodo('');
   }
-  const item = {
-    id:Math.floor(Math.random()*10000),
-    value:newTodo
+  //Removing the list item based on its id 
+  const deleteItem = (id)=>{
+    SetTodoList(todoList.filter(todo=>todo.id!==id))
+    setEditMode(false);
+    setNewTodo('');
   }
-  SetTodos(oldList=>[...oldList,item]);
-  setNewTodo('');
-  console.log(todos)
-}
- function deleteItem(id){
-  SetTodos(todos.filter(todo=>todo.id!=id))
- }
- function editMode(id){
-  todos.forEach(item => {
-    if(item.id===id){
-      setNewTodo(item.value);
-      setEditStatus(false);
-    }})
- }
- const addEditedTodo = (id)=>{
-  deleteItem(id);
-  SetTodos(prevTodos => {
-    return [...prevTodos,{id,value:newTodo}] 
-  })
-  setNewTodo('');
-  setEditStatus(true);
-  
- }
+  //Edit mode
+  const editModehandler = (todo)=>{
+    setNewTodo(todo);
+    setEditMode(true);
+  }
+  //Add edited item
+  const AddEdited = (id)=>{
+    deleteItem(id);
+    SetTodoList(prevTodos=>{
+      return [...prevTodos,{id,value:newTodo}];
+    })
+    setNewTodo('');
+    setEditMode(false)
+  }
   return (
-    <div className="App">
-      <h1>Todo List</h1>
-      <input 
-      type="text"
-      placeholder="Add your todo"
-      value={newTodo}
-      onChange={e=>setNewTodo(e.target.value)}  />
-     {editStatus&&<button onClick={addItem}>Add todo</button>} 
+    <div className='App'>
+      <h1>TODO List</h1>
+      <input
+        type="text"
+        placeholder='TODO goes here'
+        value={newTodo}
+        onChange={e => setNewTodo(e.target.value)}
+      />
+      {!editMode && 
+        <button
+          onClick={addItem}
+        >
+          Add TODO
+        </button>
+      }
+      
+
       <ul>
-        {todos.map(item=>{
-          return (
-            <li key={item.id}>
-              {item.value}
-              <button
-               style={{background:'red', color:'white',border:'unset'}}
-               onClick={()=>deleteItem(item.id)}>
-                Delete
-              </button>
-              {editStatus ?  <button
-               style={{background:'blue', color:'white',border:'unset'}}
-               onClick={()=>editMode(item.id)}>
-                Edit
-              </button>:  <button
-               style={{background:'blue', color:'white',border:'unset'}}
-               onClick={()=>addEditedTodo(item.id)}>
-                Add edited item
-              </button>}
-            
-            </li>)
+        {todoList.map(todo => {
+        return(
+                <li key={todo.id}>
+                  {todo.value}
+                  {!editMode ? 
+                  <button style={{background:'blue', color:'white',border:'unset'}}
+                  onClick={()=>editModehandler(todo.value)}
+                  >
+                    Edit
+                  </button> :
+                  <button style={{background:'blue', color:'white',border:'unset'}}
+                  onClick={()=>AddEdited(todo.id)}
+                  >
+                    Add Edited item
+                  </button> } 
+                  <button style={{background:'red', color:'white',border:'unset'}}
+                  onClick={()=>deleteItem(todo.id)}>
+                    Delete
+                  </button>
+                </li>
+              )
         })}
       </ul>
     </div>
-  );
+  )
 }
-
-export default App;
